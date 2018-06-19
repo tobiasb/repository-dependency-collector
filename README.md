@@ -13,7 +13,7 @@ Repositories will be cloned locally and then analysed statically.
 
 # Requirements
 
-* Python 3
+* Python 3.x
 
 Packages other than the ones explicitly required in the code are
 
@@ -40,13 +40,13 @@ Specify repositories relative to the base url in a `repofile`. The format is the
 
 Clone and analyse repositories, output array of dependencies in a JSON file:
 
-`python collectDependencies.py --host gitlab.corporate-gitlab-server.com --username johndoe --verbose --repofile=repositories.json > dependencies.json`
+`python collectDependencies.py --host gitlab.corporate-gitlab-server.com --username johndoe --verbose --repofile=repositories.json --outfile=dependencies.json`
 
 This will clone and analyse the following repositories:
 
  * https://gitlab.corporate-gitlab-server.com/path-to/the-repository.git
  * https://gitlab.corporate-gitlab-server.com/another-repository.git
 
-Work with local repositores (in `/tmp` folder) without cloning them again and output dependencies in CSV
+Work with local repositories (in `/tmp` folder) without cloning them again and output dependencies in CSV
 
-`python collectDependencies.py --noclone --repofile=repositories.json --outformat=csv > dependencies.csv`
+`python collectDependencies.py --noclone --repofile=repositories.json --outformat=csv --outfile=dependencies.csv`

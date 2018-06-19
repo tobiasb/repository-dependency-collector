@@ -2,20 +2,56 @@ from bs4 import BeautifulSoup
 import glob
 from dependencyCollectorBase import DependencyCollectorBase
 import re
+import requests
+from random import randint
 
 
 class MavenPomDependencyCollector(DependencyCollectorBase):
     version_reference_re = re.compile(r'\${(.*?)}')
+    license_re = re.compile(r'<span class="b lic">(.*?)<\/span>')
 
     def __init__(self, verbose):
         super().__init__(verbose=verbose)
         self.versions = []
+        self.licenses = []
 
     def process_pom(self, repo_name, root, element_name):
         for element in root.findAll(element_name):
             name = element.artifactId.string
             version = self.find_version(root, element)
-            self.get_dependencies().append(self.build_dependency(repo_name, f'maven-{element_name}', name, version))
+
+            group = ''
+            if element.groupId is not None:
+                group = element.groupId.string
+
+            license = self.retrieve_license(group, name)
+
+            dependency = self.build_dependency(repo_name, f'maven-{element_name}', name, version, license)
+
+            self.get_dependencies().append(dependency)
+
+    def retrieve_license(self, groupId, artifactId):
+        if groupId == '' or artifactId == '':
+            return ''
+
+        matches = list(filter(lambda l: l['name'] == artifactId, self.licenses))
+        if len(matches) > 0:
+            return matches[0]['license']
+
+        url = f'https://mvnrepository.com/artifact/{groupId}/{artifactId}'
+        ip = f'{randint(0, 255)}.{randint(0, 255)}.{randint(0, 255)}.{randint(0, 255)}'
+        # This circumvents the server rate limiting that kicks in after a handful requests and is very bad.
+        # Only do this if you know you'll only be making a few requests
+        response = requests.get(url, headers={'X-Forwarded-For': ip})
+
+        content = response.text
+        matches = self.license_re.findall(content)
+        if(len(matches)) > 0:
+            license = matches[0]
+        else:
+            license = ''
+        self.licenses.append({'name': artifactId, 'license': license})
+        return license
 
     def find_version(self, root, element):
         if element.version is None:

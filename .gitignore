@@ -1,4 +1,5 @@
-repositories.json
+*.json
+*.csv
 .idea/*
 tmp/*
 __pycache__/*

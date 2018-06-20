@@ -2,7 +2,7 @@
 
 A [sloppy](https://www.youtube.com/watch?v=Jd8ulMb6_ls) dependency collector. Goal: Automate a one time task that I would have otherwise done manually. Share so that my co-workers won't have to do it either.
 
-Given a base partial base URI for Git repositories and a list of repository names under that base path, collect various project dependencies and output them in JSON or CSV. Currently supported:
+Given a partial base URI for Git repositories and a list of repository names under that base path, collect various project dependencies and output them in JSON or CSV. Currently supported:
 
 * Maven plugins
 * Maven dependencies
